@@ -6,6 +6,7 @@ Pod::Spec.new do |s|
   s.author       = { "Yosuke Ishikawa" => "ishkawa73@gmail.com" }
   s.source       = { :git => "https://github.com/ishkawa/ISFakeInterfaceOrientation.git", :tag => "0.0.1" }
   s.platform     = :ios, '4.0'
+  s.frameworks   = 'CoreMotion'
   s.source_files = 'ISFakeInterfaceOrientation/**/*.{h,m}'
   s.license      = {
     :type => 'MIT',
