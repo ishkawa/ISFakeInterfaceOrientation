@@ -182,6 +182,8 @@ static void ISSwizzleInstanceMethod(Class c, SEL original, SEL alternative)
     
     [UIView animateWithDuration:duration
                      animations:^{
+                         [self willRotateToFakeInterfaceOrientation:interfaceOrientation duration:duration];
+                         
                          application.statusBarOrientation = interfaceOrientation;
                          
                          CGRect frame = [UIScreen mainScreen].bounds;
@@ -216,6 +218,10 @@ static void ISSwizzleInstanceMethod(Class c, SEL original, SEL alternative)
                      completion:^(BOOL finished) {
                          self.fakeInterfaceOrientation = interfaceOrientation;
                      }];
+}
+
+- (void)willRotateToFakeInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
 }
 
 @end

@@ -6,5 +6,6 @@
 @property (nonatomic) UIInterfaceOrientation fakeInterfaceOrientation;
 
 - (void)setFakeInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation animated:(BOOL)animated;
+- (void)willRotateToFakeInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration;
 
 @end
