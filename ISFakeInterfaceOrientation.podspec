@@ -1,13 +1,14 @@
 Pod::Spec.new do |s|
   s.name         = "ISFakeInterfaceOrientation"
-  s.version      = "0.0.1"
+  s.version      = "0.0.3"
   s.summary      = "fake interface orientation."
   s.homepage     = "https://github.com/ishkawa/ISFakeInterfaceOrientation"
-  s.author       = { "Yosuke Ishikawa" => "ishkawa73@gmail.com" }
-  s.source       = { :git => "https://github.com/ishkawa/ISFakeInterfaceOrientation.git", :tag => "0.0.1" }
+  s.author       = { "Yosuke Ishikawa" => "y@ishkawa.org" }
+  s.source       = { :git => "https://github.com/ishkawa/ISFakeInterfaceOrientation.git", :tag => "0.0.3" }
   s.platform     = :ios, '4.0'
   s.frameworks   = 'CoreMotion'
   s.source_files = 'ISFakeInterfaceOrientation/**/*.{h,m}'
+  s.requires_arc = true
   s.license      = {
     :type => 'MIT',
     :text => <<-LICENSE

@@ -6,6 +6,7 @@ static double const ISGravityThreshold = 0.7;
 
 static char *const ISFakeInterfaceOrientationKey = "fakeInterfaceOrientation";
 static char *const ISIsActiveKey                 = "isActive";
+static char *const ISIsAnimatingKey              = "isAnimating";
 static char *const ISFakeAutoRotationEnabledKey  = "fakeAutoRotationEnabled";
 static char *const ISMotionManagerKey            = "motionManager";
 
@@ -24,6 +25,7 @@ static void ISSwizzleInstanceMethod(Class c, SEL original, SEL alternative)
 @interface UIViewController ()
 
 @property (nonatomic, getter = isActive) BOOL active;
+@property (nonatomic, getter = isAnimating) BOOL animating;
 @property (nonatomic, strong) CMMotionManager *motionManager;
 
 @end
@@ -61,6 +63,16 @@ static void ISSwizzleInstanceMethod(Class c, SEL original, SEL alternative)
 - (void)setActive:(BOOL)active
 {
     objc_setAssociatedObject(self, ISIsActiveKey, @(active), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (BOOL)isAnimating
+{
+    return [objc_getAssociatedObject(self, ISIsAnimatingKey) boolValue];
+}
+
+- (void)setAnimating:(BOOL)animating
+{
+    objc_setAssociatedObject(self, ISIsAnimatingKey, @(animating), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 - (UIInterfaceOrientation)fakeInterfaceOrientation
@@ -157,6 +169,9 @@ static void ISSwizzleInstanceMethod(Class c, SEL original, SEL alternative)
     if (self.fakeInterfaceOrientation == interfaceOrientation) {
         return;
     }
+    if (self.isAnimating) {
+        return;
+    }
     
     UIApplication *application = [UIApplication sharedApplication];
     NSTimeInterval duration = application.statusBarOrientationAnimationDuration;
@@ -180,10 +195,9 @@ static void ISSwizzleInstanceMethod(Class c, SEL original, SEL alternative)
         }
     }
     
+    self.animating = YES;
     [UIView animateWithDuration:duration
                      animations:^{
-                         [self willRotateToFakeInterfaceOrientation:interfaceOrientation duration:duration];
-                         
                          application.statusBarOrientation = interfaceOrientation;
                          
                          CGRect frame = [UIScreen mainScreen].bounds;
@@ -214,9 +228,12 @@ static void ISSwizzleInstanceMethod(Class c, SEL original, SEL alternative)
                              default: break;
                          }
                          self.view.frame = frame;
+                         
+                         [self willRotateToFakeInterfaceOrientation:interfaceOrientation duration:duration];
                      }
                      completion:^(BOOL finished) {
                          self.fakeInterfaceOrientation = interfaceOrientation;
+                         self.animating = NO;
                      }];
 }
 
