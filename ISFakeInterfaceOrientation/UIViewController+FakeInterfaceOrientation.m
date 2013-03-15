@@ -4,11 +4,12 @@
 
 static double const ISGravityThreshold = 0.7;
 
-static char *const ISFakeInterfaceOrientationKey = "fakeInterfaceOrientation";
-static char *const ISIsActiveKey                 = "isActive";
-static char *const ISIsAnimatingKey              = "isAnimating";
-static char *const ISFakeAutoRotationEnabledKey  = "fakeAutoRotationEnabled";
-static char *const ISMotionManagerKey            = "motionManager";
+static char *const ISFakeInterfaceOrientationKey          = "fakeInterfaceOrientation";
+static char *const ISPreventedFakeInterfaceOrientationKey = "preventedFakeInterfaceOrientation";
+static char *const ISIsActiveKey                          = "isActive";
+static char *const ISIsAnimatingKey                       = "isAnimating";
+static char *const ISFakeAutoRotationEnabledKey           = "fakeAutoRotationEnabled";
+static char *const ISMotionManagerKey                     = "motionManager";
 
 static void ISSwizzleInstanceMethod(Class c, SEL original, SEL alternative)
 {
@@ -53,6 +54,16 @@ static void ISSwizzleInstanceMethod(Class c, SEL original, SEL alternative)
         [self beginAutoRotation];
     }
     objc_setAssociatedObject(self, ISFakeAutoRotationEnabledKey, @(fakeAutoRotationEnabled), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (UIInterfaceOrientation)preventedFakeInterfaceOrientation
+{
+    return [objc_getAssociatedObject(self, ISPreventedFakeInterfaceOrientationKey) integerValue];
+}
+
+- (void)setPreventedFakeInterfaceOrientation:(UIInterfaceOrientation)preventedFakeInterfaceOrientation
+{
+    objc_setAssociatedObject(self, ISPreventedFakeInterfaceOrientationKey, @(preventedFakeInterfaceOrientation), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 - (BOOL)isActive
@@ -146,18 +157,26 @@ static void ISSwizzleInstanceMethod(Class c, SEL original, SEL alternative)
 
 - (void)handleMotion:(CMDeviceMotion *)motion
 {
+    UIInterfaceOrientation orientation = 0;
     CMAcceleration gravity = motion.gravity;
     if (ABS(gravity.y) < ABS(gravity.x)) {
         if (gravity.x < -ISGravityThreshold) {
-            [self setFakeInterfaceOrientation:UIInterfaceOrientationLandscapeRight animated:YES];
+            orientation = UIInterfaceOrientationLandscapeRight;
         }
         if (gravity.x > ISGravityThreshold) {
-            [self setFakeInterfaceOrientation:UIInterfaceOrientationLandscapeLeft animated:YES];
+            orientation = UIInterfaceOrientationLandscapeLeft;
         }
     } else {
         if (gravity.y < -ISGravityThreshold) {
-            [self setFakeInterfaceOrientation:UIInterfaceOrientationPortrait animated:YES];
+            orientation = UIInterfaceOrientationPortrait;
         }
+    }
+    
+    if (orientation && orientation != self.preventedFakeInterfaceOrientation) {
+        [self setFakeInterfaceOrientation:orientation animated:YES];
+    }
+    if (orientation != self.preventedFakeInterfaceOrientation) {
+        self.preventedFakeInterfaceOrientation = 0;
     }
 }
 

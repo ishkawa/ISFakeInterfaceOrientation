@@ -1,10 +1,10 @@
 Pod::Spec.new do |s|
   s.name         = "ISFakeInterfaceOrientation"
-  s.version      = "0.0.3"
+  s.version      = "0.0.4"
   s.summary      = "fake interface orientation."
   s.homepage     = "https://github.com/ishkawa/ISFakeInterfaceOrientation"
   s.author       = { "Yosuke Ishikawa" => "y@ishkawa.org" }
-  s.source       = { :git => "https://github.com/ishkawa/ISFakeInterfaceOrientation.git", :tag => "0.0.3" }
+  s.source       = { :git => "https://github.com/ishkawa/ISFakeInterfaceOrientation.git", :tag => "0.0.4" }
   s.platform     = :ios, '4.0'
   s.frameworks   = 'CoreMotion'
   s.source_files = 'ISFakeInterfaceOrientation/**/*.{h,m}'
